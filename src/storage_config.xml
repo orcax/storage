@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<storage>
+
+	<!-- Constants -->
+	<block-size>200</block-size>
+	<picture-dir>pictures</picture-dir>
+	<post-dir>posts</post-dir>
+	
+	<!-- Variables -->
+	<current-vdisk>s1</current-vdisk>
+	<current-database>db1</current-database>
+		
+	<vdisk>
+		<id>s1</id>
+		<status>use</status>
+		<ip>localhost</ip>
+		<port></port>
+		<root-path>/var/tmp/storage/</root-path>
+	</vdisk>
+	
+	<database>
+		<id>db1</id>
+		<name>mysql</name>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<url>jdbc:mysql://localhost:3306/storage</url>
+		<user>root</user>
+		<password>1234</password>
+		<maxconn>10</maxconn>
+		<sql-props>default_sql.properties</sql-props>
+	</database>
+	
+</storage>
