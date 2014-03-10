@@ -2,6 +2,7 @@ package sse.storage.core;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import sse.storage.bean.Post;
 import sse.storage.bean.Post;
@@ -27,7 +28,11 @@ public class PostManager implements ResourceManager {
     } catch(FileNotFoundException e) {
       
     } finally {
-      fis.close();
+      try {
+        fis.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     return null;
   }
