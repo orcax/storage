@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <storage>
-
-	<!-- Constants -->
-	<block-size>200</block-size>
-	<picture-dir>pictures</picture-dir>
-	<post-dir>posts</post-dir>
 	
-	<!-- Variables -->
-	<current-vdisk>s1</current-vdisk>
+	<current-vdisk>s2</current-vdisk>
 	<current-database>db1</current-database>
 		
 	<vdisk>
 		<id>s1</id>
-		<status>use</status>
+		<type>master</type>
 		<ip>localhost</ip>
-		<port></port>
+		<user></user>
+		<password></password>
 		<root-path>/var/tmp/storage/</root-path>
 	</vdisk>
 	
+	<vdisk>
+		<id>s2</id>
+		<type>master</type>
+		<ip>172.16.103.132</ip>
+		<user>orcax</user>
+		<password>1234</password>
+		<root-path>/Public/storage</root-path>
+	</vdisk>
+	
+	
 	<database>
 		<id>db1</id>
+		<type>master</type>
 		<name>mysql</name>
 		<driver>com.mysql.jdbc.Driver</driver>
 		<url>jdbc:mysql://localhost:3306/storage</url>
 		<user>root</user>
 		<password>1234</password>
 		<maxconn>10</maxconn>
-		<sql-props>default_sql.properties</sql-props>
 	</database>
 	
 </storage>

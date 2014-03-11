@@ -13,6 +13,7 @@ import com.xeiam.yank.DBProxy;
 
 public abstract class BaseDao {
 
+  protected String prefix = "fs_";
   protected String tableName;
   protected Class<?> beanClass;
 
@@ -46,6 +47,9 @@ public abstract class BaseDao {
     return tableName.toLowerCase();
   }
 
+  /**
+   * Only works for MySQL or other databases supporting LAST_INSERT_ID function.
+   */
   protected int getLastInsertId() {
     String sql = "SELECT LAST_INSERT_ID() FROM " + tableName;
     BigInteger id = DBProxy.querySingleScalarSQL(getDb(), sql,
@@ -53,6 +57,16 @@ public abstract class BaseDao {
     return id.intValue();
   }
   
+  public void init() {
+    
+  }
+  
+  public int createTable() {
+    System.out.println("[INFO] Create table " + tableName);
+    String sqlKey = "CREATE_TABLE_" + tableName.toUpperCase();
+    return DBProxy.executeSQLKey(getDb(), sqlKey, null);
+  }
+
   public Object read(int id) {
     String sql = String.format("SELECT * FROM %s WHERE id='%d'", tableName, id);
     return DBProxy.querySingleObjectSQL(getDb(), sql, beanClass, null);
@@ -69,19 +83,18 @@ public abstract class BaseDao {
     StringBuffer sql1 = new StringBuffer();
     StringBuffer sql2 = new StringBuffer();
     List<Object> params = new ArrayList<Object>();
-    int i = 0;
     for (Field f : fields) {
       if (f.getName().equals("id")) {
         continue;
       }
-      
+
       String methodName = "get"
           + String.valueOf(f.getName().charAt(0)).toUpperCase()
           + f.getName().substring(1);
       try {
         Method get = obj.getMethod(methodName);
         Object value = get.invoke(bean);
-        if(value == null) {
+        if (value == null) {
           continue;
         }
         sql1.append(bean2Table(f.getName()) + ",");
@@ -98,12 +111,11 @@ public abstract class BaseDao {
       } catch (InvocationTargetException e) {
         e.printStackTrace();
       }
-      ++i;
     }
     String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", tableName,
         sql1.substring(0, sql1.length() - 1),
         sql2.substring(0, sql2.length() - 1));
-    System.out.println(sql);
+    // System.out.println(sql);
     DBProxy.executeSQL(getDb(), sql, params.toArray());
     return getLastInsertId();
   }

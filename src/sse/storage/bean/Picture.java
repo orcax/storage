@@ -4,11 +4,12 @@ import java.util.Arrays;
 
 public class Picture {
   private Integer id;
+  private String block_id;
+  private String vdisk_id;
   private String name;
   private String format;
   private Integer size;
-  private String block_id;
-  private String vdisk_id;
+  private String description;
   private byte[] content;
 
   public Integer getId() {
@@ -17,6 +18,22 @@ public class Picture {
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public String getBlock_id() {
+    return block_id;
+  }
+
+  public void setBlock_id(String block_id) {
+    this.block_id = block_id;
+  }
+
+  public String getVdisk_id() {
+    return vdisk_id;
+  }
+
+  public void setVdisk_id(String vdisk_id) {
+    this.vdisk_id = vdisk_id;
   }
 
   public String getName() {
@@ -43,20 +60,12 @@ public class Picture {
     this.size = size;
   }
 
-  public String getBlock_id() {
-    return block_id;
+  public String getDescription() {
+    return description;
   }
 
-  public void setBlock_id(String block_id) {
-    this.block_id = block_id;
-  }
-
-  public String getVdisk_id() {
-    return vdisk_id;
-  }
-
-  public void setVdisk_id(String vdisk_id) {
-    this.vdisk_id = vdisk_id;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public byte[] getContent() {
@@ -69,9 +78,10 @@ public class Picture {
 
   @Override
   public String toString() {
-    return "Picture [id=" + id + ", name=" + name + ", format=" + format
-        + ", size=" + size + ", block_id=" + block_id + ", vdisk_id="
-        + vdisk_id + ", content=" + Arrays.toString(content) + "]";
+    return "Picture [id=" + id + ", block_id=" + block_id + ", vdisk_id="
+        + vdisk_id + ", name=" + name + ", format=" + format + ", size=" + size
+        + ", description=" + description + ", content="
+        + Arrays.toString(content) + "]";
   }
 
 }
