@@ -1,8 +1,7 @@
-package sse.storage.bean;
-
-import java.util.Arrays;
+package sse.storage.db.bean;
 
 public class Picture {
+
   private Integer id;
   private String block_id;
   private String vdisk_id;
@@ -10,7 +9,6 @@ public class Picture {
   private String format;
   private Integer size;
   private String description;
-  private byte[] content;
 
   public Integer getId() {
     return id;
@@ -68,20 +66,11 @@ public class Picture {
     this.description = description;
   }
 
-  public byte[] getContent() {
-    return content;
-  }
-
-  public void setContent(byte[] content) {
-    this.content = content;
-  }
-
   @Override
   public String toString() {
     return "Picture [id=" + id + ", block_id=" + block_id + ", vdisk_id="
         + vdisk_id + ", name=" + name + ", format=" + format + ", size=" + size
-        + ", description=" + description + ", content="
-        + Arrays.toString(content) + "]";
+        + ", description=" + description + "]";
   }
 
 }

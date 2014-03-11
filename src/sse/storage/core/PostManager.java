@@ -4,10 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import sse.storage.bean.Post;
-import sse.storage.bean.Post;
-import sse.storage.config.StorageConfig;
-import sse.storage.dao.PostDao;
+import sse.storage.constant.Config;
+import sse.storage.db.bean.Post;
+import sse.storage.db.dao.PostDao;
 
 public class PostManager implements ResourceManager {
 
@@ -53,8 +52,8 @@ public class PostManager implements ResourceManager {
   public String path(Object resource) {
     Post post = (Post) resource;
     return post == null ? "" : String.format("%s/%s/%s/%s",
-        StorageConfig.INSTANCE.getVdisk(post.getVdisk_id()).getRootPath(),
-        StorageConfig.INSTANCE.POST_DIR, post.getBlock_id(), post.getId());
+        Config.INSTANCE.getVdisk(post.getVdisk_id()).getRootPath(),
+        Config.INSTANCE.POST_DIR, post.getBlock_id(), post.getId());
   }
 
 }

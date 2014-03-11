@@ -1,4 +1,4 @@
-package sse.storage.config;
+package sse.storage.constant;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,30 +10,32 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import sse.storage.bean.Database;
-import sse.storage.bean.VDisk;
+import sse.storage.db.bean.Database;
 import sse.storage.except.ConfigInitException;
+import sse.storage.fs.bean.VDisk;
 
 import com.xeiam.yank.DBConnectionManager;
 import com.xeiam.yank.PropertiesUtils;
 
-public class StorageConfig {
-  public static StorageConfig INSTANCE = new StorageConfig();
+public class Config {
+  public static Config INSTANCE = new Config();
 
   public static final String STORAGE_CONFIG = "storage_config.xml";
   public static final String SQL_PROPERTIES = "mysql_sql.properties";
   public static final int BLOCK_SIZE = 200;
-  public static final String PICTURE_DIR = "pictures";
-  public static final String POST_DIR = "posts";
-  public static final String RESOURCE_DIR = "resources";
-  public static final String VIDEO_DIR = "videos";
+  public static final Map<ResourceType, String> RESOURCE_DIR = new HashMap<ResourceType, String>();
+  static {
+    RESOURCE_DIR.put(ResourceType.PICTURE, "/pictures");
+    RESOURCE_DIR.put(ResourceType.POST, "/posts");
+    RESOURCE_DIR.put(ResourceType.UNKNOWN, "/unknown");
+  }
 
   private Map<String, VDisk> vdisks = null;
   private Map<String, Database> databases = null;
   private String currentVDiskId = "";
   private String currentDbId = "";
 
-  private StorageConfig() {
+  private Config() {
     try {
       initialize();
     } catch (Exception e) {
@@ -43,7 +45,7 @@ public class StorageConfig {
   }
 
   private void initialize() throws Exception {
-    InputStream xml = StorageConfig.class.getClassLoader().getResourceAsStream(
+    InputStream xml = Config.class.getClassLoader().getResourceAsStream(
         STORAGE_CONFIG);
     SAXReader saxReader = new SAXReader();
     Document doc = saxReader.read(xml);
@@ -104,7 +106,6 @@ public class StorageConfig {
     if (!VDisk.TYPE_MASTER.equals(vdisk.getType())) {
       throw new ConfigInitException("Only master-type vdisk can be current");
     }
-    vdisk.makeRootDir();
 
     // Get current database
 
@@ -114,7 +115,7 @@ public class StorageConfig {
     }
     currentDbId = dbId;
     Database db = databases.get(dbId);
-    if(!Database.TYPE_MASTER.equals(db.getType())) {
+    if (!Database.TYPE_MASTER.equals(db.getType())) {
       throw new ConfigInitException("Only master-type databse can be current");
     }
     Properties sqlProps = PropertiesUtils
@@ -122,9 +123,9 @@ public class StorageConfig {
     DBConnectionManager.INSTANCE.init(db.getDbProps(), sqlProps);
 
   }
-  
+
   public void init() {
-    
+
   }
 
   public VDisk getCurrentVdisk() {

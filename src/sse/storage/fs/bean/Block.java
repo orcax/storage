@@ -1,4 +1,4 @@
-package sse.storage.bean;
+package sse.storage.fs.bean;
 
 public class Block {
   private String vdiskId;

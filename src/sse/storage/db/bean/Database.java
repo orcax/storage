@@ -1,8 +1,8 @@
-package sse.storage.bean;
+package sse.storage.db.bean;
 
 import java.util.Properties;
 
-import static sse.storage.config.Toolkit.*;
+import static sse.storage.constant.Toolkit.*;
 
 public class Database {
 

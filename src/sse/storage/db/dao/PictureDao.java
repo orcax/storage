@@ -1,6 +1,6 @@
-package sse.storage.dao;
+package sse.storage.db.dao;
 
-import sse.storage.bean.Picture;
+import sse.storage.db.bean.Picture;
 
 public class PictureDao extends BaseDao {
 

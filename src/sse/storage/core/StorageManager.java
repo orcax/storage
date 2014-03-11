@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import sse.storage.bean.Picture;
-import sse.storage.bean.Post;
+import sse.storage.db.bean.Picture;
+import sse.storage.db.bean.Post;
 
 public class StorageManager {
 

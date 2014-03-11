@@ -1,6 +1,6 @@
-package sse.storage.dao;
+package sse.storage.db.dao;
 
-import sse.storage.bean.Post;
+import sse.storage.db.bean.Post;
 
 public class PostDao extends BaseDao {
 

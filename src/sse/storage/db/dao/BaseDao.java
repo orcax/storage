@@ -1,4 +1,6 @@
-package sse.storage.dao;
+package sse.storage.db.dao;
+
+import static sse.storage.constant.Toolkit.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -7,7 +9,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import sse.storage.config.StorageConfig;
+import sse.storage.constant.Config;
 
 import com.xeiam.yank.DBProxy;
 
@@ -18,7 +20,7 @@ public abstract class BaseDao {
   protected Class<?> beanClass;
 
   protected static String getDb() {
-    return StorageConfig.INSTANCE.getCurrentDb().getName();
+    return Config.INSTANCE.getCurrentDb().getName();
   }
 
   protected String table2Bean(String tableName) {
@@ -56,13 +58,13 @@ public abstract class BaseDao {
         BigInteger.class, null);
     return id.intValue();
   }
-  
+
   public void init() {
-    
+
   }
-  
+
   public int createTable() {
-    System.out.println("[INFO] Create table " + tableName);
+    info("Create table " + tableName);
     String sqlKey = "CREATE_TABLE_" + tableName.toUpperCase();
     return DBProxy.executeSQLKey(getDb(), sqlKey, null);
   }

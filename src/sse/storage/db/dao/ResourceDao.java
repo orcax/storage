@@ -1,6 +1,6 @@
-package sse.storage.dao;
+package sse.storage.db.dao;
 
-import sse.storage.bean.Resource;
+import sse.storage.db.bean.Resource;
 
 public class ResourceDao extends BaseDao {
   

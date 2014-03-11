@@ -8,21 +8,21 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import sse.storage.bean.Block;
-import sse.storage.bean.Picture;
-import sse.storage.config.ResourceType;
-import sse.storage.config.StorageAdapter;
-import sse.storage.config.StorageConfig;
-import sse.storage.dao.PictureDao;
+import sse.storage.constant.Config;
+import sse.storage.constant.ResourceType;
+import sse.storage.db.bean.Picture;
+import sse.storage.db.dao.PictureDao;
+import sse.storage.fs.Coordinator;
+import sse.storage.fs.bean.Block;
+import sse.storage.fs.io.Writer;
 
-public class PictureManager implements ResourceManager {
+public class PictureManager {
 
   public static PictureManager INSTANCE = new PictureManager();
 
   private PictureManager() {
   }
 
-  @Override
   public Picture read(int id) {
     Picture pic = (Picture) PictureDao.INSTANCE.read(id);
     if (pic == null) {
@@ -54,34 +54,17 @@ public class PictureManager implements ResourceManager {
     return pic;
   }
 
-  @Override
   public Object save(String name, String format, byte[] content) {
     Picture picture = new Picture();
     picture.setName(name);
     picture.setFormat(format);
     picture.setSize(content.length);
-    Block block = StorageAdapter.allocateBlock(ResourceType.PICTURE);
+    Block block = Coordinator.allocateBlock(ResourceType.PICTURE);
     picture.setBlock_id(block.getBlockId());
     picture.setVdisk_id(block.getVdiskId());
     int id = PictureDao.INSTANCE.insert(picture);
     picture.setId(id);
-    FileOutputStream fos = null;
-    try {
-      fos = new FileOutputStream(path(picture));
-      fos.write(content);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      try {
-        if (fos != null) {
-          fos.close();
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+    Writer.INSTANCE.writeFile(picture, content);
     return picture;
   }
 
@@ -91,7 +74,6 @@ public class PictureManager implements ResourceManager {
    * @param path
    * @return
    */
-  @Override
   public Picture save(String inPath) {
     FileInputStream fis = null;
     FileOutputStream fos = null;
@@ -110,7 +92,7 @@ public class PictureManager implements ResourceManager {
       picture.setName(name);
       picture.setFormat(format);
       picture.setSize(fis.available());
-      Block block = StorageAdapter.allocateBlock(ResourceType.PICTURE);
+      Block block = Coordinator.allocateBlock(ResourceType.PICTURE);
       picture.setBlock_id(block.getBlockId());
       picture.setVdisk_id(block.getVdiskId());
       int id = PictureDao.INSTANCE.insert(picture);
@@ -160,12 +142,4 @@ public class PictureManager implements ResourceManager {
     return null;
   }
 
-  @Override
-  public String path(Object resource) {
-    Picture pic = (Picture) resource;
-    return pic == null ? "" : String.format("%s/%s/%s/%s.%s",
-        StorageConfig.INSTANCE.getVdisk(pic.getVdisk_id()).getRootPath(),
-        StorageConfig.INSTANCE.PICTURE_DIR, pic.getBlock_id(), pic.getId(),
-        pic.getFormat());
-  }
 }

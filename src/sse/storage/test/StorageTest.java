@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import sse.storage.bean.Picture;
 import sse.storage.core.PictureManager;
+import sse.storage.db.bean.Picture;
 
 public class StorageTest {
   

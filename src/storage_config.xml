@@ -16,7 +16,7 @@
 	<vdisk>
 		<id>s2</id>
 		<type>master</type>
-		<ip>172.16.103.132</ip>
+		<ip>172.16.103.136</ip>
 		<user>orcax</user>
 		<password>1234</password>
 		<root-path>/Public/storage</root-path>
