@@ -1,11 +1,9 @@
-package sse.storage.core;
+package sse.storage.config;
 
 import java.io.File;
 
 import sse.storage.bean.Block;
 import sse.storage.bean.VDisk;
-import sse.storage.config.ResourceType;
-import sse.storage.config.StorageConfig;
 
 public class StorageAdapter {
 

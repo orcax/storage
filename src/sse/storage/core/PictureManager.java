@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 import sse.storage.bean.Block;
 import sse.storage.bean.Picture;
 import sse.storage.config.ResourceType;
+import sse.storage.config.StorageAdapter;
 import sse.storage.config.StorageConfig;
 import sse.storage.dao.PictureDao;
 
