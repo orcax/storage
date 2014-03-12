@@ -1,21 +1,46 @@
+/*
+ * Chris X.
+ * 
+ * Copyright 2012-2014 Zhang Chenxi Project, SSE, Tongji University.
+ * 
+ * This software is the confidential and proprietary information of 
+ * Zhang Chenxi project. You shall not disclose such Confidential 
+ * Information and shall use it only in accordance with the terms of 
+ * the license agreement you participate in the project work. 
+ */
 package sse.storage.constant;
 
+/**
+ * Class ResourceType
+ * 
+ * @version 2014.3.10
+ * @author Chris X.
+ */
 public enum ResourceType {
-  PICTURE("picture"), POST("post"), UNKNOWN("unknown");
+    PICTURE("picture"), POST("post"), UNKNOWN("unknown");
 
-  private final String type;
+    private final String value;
 
-  private ResourceType(String type) {
-    this.type = type;
-  }
-  
-  @Override
-  public String toString() {
-    return this.type;
-  }
-  
-  public static void main(String[] args) {
-    System.out.println(ResourceType.PICTURE);
-  }
+    private ResourceType(String type) {
+	this.value = type;
+    }
+
+    @Override
+    public String toString() {
+	return this.value;
+    }
+
+    public static ResourceType toEnum(String value) {
+	for (ResourceType rt : ResourceType.values()) {
+	    if (rt.value.equalsIgnoreCase(value)) {
+		return rt;
+	    }
+	}
+	return null;
+    }
+
+    public static void main(String[] args) {
+	System.out.println(ResourceType.PICTURE.toString());
+    }
 
 }

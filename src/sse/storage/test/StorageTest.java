@@ -1,18 +1,18 @@
 package sse.storage.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 import sse.storage.core.PictureManager;
-import sse.storage.db.bean.Picture;
+import sse.storage.fs.bean.ResourceFile;
 
 public class StorageTest {
   
   @Test
   public void savePicture() {
-    Picture p2 = PictureManager.INSTANCE.save("/var/tmp/storage/test/aaaaaa.jpg");
-    assertNotNull(p2);
+    ResourceFile p = PictureManager.INSTANCE.save("/var/tmp/storage/test/aaaaaa.jpg");
+    assertNotNull(p);
   }
   
 }
