@@ -10,6 +10,8 @@
  */
 package sse.storage.db.bean;
 
+import java.sql.Timestamp;
+
 /**
  * Class Resource
  * 
@@ -25,6 +27,8 @@ public class Resource {
     private String format;
     private Integer size;
     private String description;
+    private Timestamp created;
+    private Timestamp modified;
 
     public Integer getId() {
 	return id;
@@ -90,12 +94,28 @@ public class Resource {
 	this.description = description;
     }
 
+    public Timestamp getCreated() {
+	return created;
+    }
+
+    public void setCreated(Timestamp created) {
+	this.created = created;
+    }
+
+    public Timestamp getModified() {
+	return modified;
+    }
+
+    public void setModified(Timestamp modified) {
+	this.modified = modified;
+    }
+
     @Override
     public String toString() {
 	return "Resource [id=" + id + ", block_id=" + block_id + ", vdisk_id="
 		+ vdisk_id + ", name=" + name + ", type=" + type + ", format="
 		+ format + ", size=" + size + ", description=" + description
-		+ "]";
+		+ ", created=" + created + ", modified=" + modified + "]";
     }
 
 }

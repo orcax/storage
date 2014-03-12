@@ -42,6 +42,9 @@ public class Writer {
 	    return;
 	}
 	VDisk vdisk = Config.INSTANCE.getVdisk(res.getVdisk_id());
+	if (vdisk == null) {
+	    return;
+	}
 	if (vdisk.isLocal()) {
 	    FileOutputStream fos = null;
 	    try {

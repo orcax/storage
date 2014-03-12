@@ -11,6 +11,7 @@
 package sse.storage.core;
 
 import sse.storage.constant.ResourceType;
+import sse.storage.db.bean.Picture;
 import sse.storage.db.dao.PictureDao;
 import sse.storage.fs.Coordinator;
 import sse.storage.fs.bean.Block;
@@ -31,8 +32,11 @@ public class PictureManager {
     }
 
     public ResourceFile read(int id) {
-
-	return null;
+	Picture pic = (Picture) PictureDao.INSTANCE.read(id);
+	ResourceFile rf = new ResourceFile();
+	rf.fromPicture(pic);
+	rf.setContent(Reader.INSTNANCE.readFile(rf));
+	return rf;
     }
 
     public ResourceFile save(String name, String format, byte[] content) {

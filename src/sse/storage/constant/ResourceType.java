@@ -17,7 +17,7 @@ package sse.storage.constant;
  * @author Chris X.
  */
 public enum ResourceType {
-    PICTURE("picture"), POST("post"), UNKNOWN("unknown");
+    PICTURE("picture"), POST("post"), RESOURCE("resource");
 
     private final String value;
 

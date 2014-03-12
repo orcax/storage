@@ -26,12 +26,16 @@ public final class Const {
     public static final String SQL_PROPERTIES = "mysql_sql.properties";
 
     public static final int BLOCK_SIZE = 200;
+    
+    public static final String POST_FORMAT = "txt";
+    
+    public static final String POST_ENCODING = "utf-8";
 
     public static final Map<ResourceType, String> RESOURCE_DIR = new HashMap<ResourceType, String>();
     static {
 	RESOURCE_DIR.put(ResourceType.PICTURE, "/pictures");
 	RESOURCE_DIR.put(ResourceType.POST, "/posts");
-	RESOURCE_DIR.put(ResourceType.UNKNOWN, "/unknown");
+	RESOURCE_DIR.put(ResourceType.RESOURCE, "/resources");
     }
 
     private Const() {
