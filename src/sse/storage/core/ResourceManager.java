@@ -23,7 +23,6 @@ import sse.storage.etc.ResourceType;
 import sse.storage.fs.BlockCenter;
 import sse.storage.fs.Reader;
 import sse.storage.fs.Writer;
-import sse.storage.fs.bean.BlockOld;
 
 /**
  * Class ResourceManager
