@@ -8,7 +8,9 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.constant;
+package sse.storage.etc;
+
+import java.sql.Timestamp;
 
 /**
  * Class Toolkit
@@ -16,13 +18,13 @@ package sse.storage.constant;
  * @version 2014.3.10
  * @author Chris X.
  */
-public class Toolkit {
+public final class Toolkit {
 
-    public static boolean isEmpty(String str) {
+    public static final boolean isEmpty(String str) {
 	return str == null || str.isEmpty();
     }
 
-    public static boolean isEmpty(String... strs) {
+    public static final boolean isEmpty(String... strs) {
 	for (String str : strs) {
 	    if (isEmpty(str)) {
 		return true;
@@ -31,11 +33,18 @@ public class Toolkit {
 	return false;
     }
 
-    public static void info(Object obj) {
+    public static final void info(Object obj) {
 	System.out.println("[INFO] " + obj);
     }
 
-    public static void error(Object obj) {
+    public static final void error(Object obj) {
 	System.out.println("[ERROR] " + obj);
+    }
+
+    public static final Timestamp now() {
+	return new Timestamp(System.currentTimeMillis());
+    }
+
+    private Toolkit() {
     }
 }

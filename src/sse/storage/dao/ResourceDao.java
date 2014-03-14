@@ -8,24 +8,24 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.db.dao;
+package sse.storage.dao;
 
-import sse.storage.db.bean.Picture;
+import sse.storage.bean.Resource;
 
 /**
- * Class PictureDao
+ * Class ResourceDao
  * 
  * @version 2014.3.10
  * @author Chris X.
  */
-public class PictureDao extends BaseDao {
+public class ResourceDao extends BaseDao {
 
-    public static final PictureDao INSTANCE = new PictureDao();
+    public static final ResourceDao INSTANCE = new ResourceDao();
 
-    private PictureDao() {
+    private ResourceDao() {
 	super();
-	this.tableName = this.prefix + "pictures";
-	this.beanClass = Picture.class;
+	this.tableName = this.prefix + "resources";
+	this.beanClass = Resource.class;
 	this.createTable();
     }
 

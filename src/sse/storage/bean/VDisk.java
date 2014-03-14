@@ -8,13 +8,14 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.fs.bean;
+package sse.storage.bean;
 
-import static sse.storage.constant.Toolkit.*;
+import static sse.storage.etc.Toolkit.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -38,13 +39,13 @@ public class VDisk {
     private String user;
     private String password;
     private String rootPath; // Only support SMB protocal for remote access
-
+    
     private String mkpath(String subDir) {
 	if (isEmpty(subDir)) {
 	    return rootPath + "/";
 	}
 	if (!subDir.startsWith("/")) {
-	    subDir += "/" + subDir;
+	    subDir = "/" + subDir;
 	}
 	return subDir.endsWith("/") ? rootPath + subDir : rootPath + subDir
 		+ "/";
@@ -79,7 +80,8 @@ public class VDisk {
 	return true;
     }
 
-    public boolean isdir(String subDir) throws IOException {
+    public boolean isdir(String subDir) throws MalformedURLException,
+	    SmbException {
 	String path = mkpath(subDir);
 	if (isLocal()) {
 	    File dir = new File(path);
@@ -90,7 +92,8 @@ public class VDisk {
 	}
     }
 
-    public String[] ls(String subDir) throws IOException {
+    public String[] ls(String subDir) throws MalformedURLException,
+	    SmbException {
 	String path = mkpath(subDir);
 	if (isLocal()) {
 	    return new File(path).list();
@@ -99,7 +102,8 @@ public class VDisk {
 	}
     }
 
-    public String[] lsdirs(String subDir) throws IOException {
+    public String[] lsdirs(String subDir) throws MalformedURLException,
+	    SmbException {
 	String path = mkpath(subDir);
 	String[] names = null;
 	if (isLocal()) {
@@ -135,7 +139,8 @@ public class VDisk {
 	return names;
     }
 
-    public void mkdirs(String subDir) throws IOException {
+    public void mkdirs(String subDir) throws MalformedURLException,
+	    SmbException {
 	String path = mkpath(subDir);
 	if (isLocal()) {
 	    File dir = new File(path);
@@ -147,6 +152,15 @@ public class VDisk {
 	    if (!dir.exists() || !dir.isDirectory()) {
 		dir.mkdirs();
 	    }
+	}
+    }
+
+    public void rm(String subDir) throws MalformedURLException, SmbException {
+	String path = mkpath(subDir);
+	if (isLocal()) {
+	    new File(path).delete();
+	} else {
+	    new SmbFile(path).delete();
 	}
     }
 

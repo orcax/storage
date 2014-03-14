@@ -8,11 +8,11 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.db.bean;
+package sse.storage.bean;
 
 import java.util.Properties;
 
-import static sse.storage.constant.Toolkit.*;
+import static sse.storage.etc.Toolkit.*;
 
 /**
  * Class Database
@@ -36,6 +36,10 @@ public class Database {
 
     public boolean isValid() {
 	return !isEmpty(id, type, name, driver, user, password, url, maxconn);
+    }
+    
+    public boolean isMaster() {
+	return TYPE_MASTER.equals(this.type);
     }
 
     public Properties getDbProps() {

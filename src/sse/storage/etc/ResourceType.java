@@ -8,7 +8,7 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.constant;
+package sse.storage.etc;
 
 /**
  * Class ResourceType
@@ -17,7 +17,7 @@ package sse.storage.constant;
  * @author Chris X.
  */
 public enum ResourceType {
-    PICTURE("picture"), POST("post"), RESOURCE("resource");
+    PICTURE("picture"), POST("post"), OTHER("other");
 
     private final String value;
 
@@ -38,9 +38,4 @@ public enum ResourceType {
 	}
 	return null;
     }
-
-    public static void main(String[] args) {
-	System.out.println(ResourceType.PICTURE.toString());
-    }
-
 }

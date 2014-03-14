@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <storage>
 	
-	<current-vdisk>s2</current-vdisk>
+	<current-vdisk>s1</current-vdisk>
 	<current-database>db1</current-database>
 		
 	<vdisk>
@@ -28,7 +28,7 @@
 		<type>master</type>
 		<name>mysql</name>
 		<driver>com.mysql.jdbc.Driver</driver>
-		<url>jdbc:mysql://localhost:3306/storage</url>
+		<url>jdbc:mysql://localhost:3306/storage?useUnicode=true&amp;characterEncoding=UTF-8</url>
 		<user>root</user>
 		<password>1234</password>
 		<maxconn>10</maxconn>

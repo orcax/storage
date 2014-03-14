@@ -8,18 +8,19 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.db.dao;
+package sse.storage.dao;
 
-import static sse.storage.constant.Toolkit.*;
+import static sse.storage.etc.Toolkit.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import sse.storage.constant.Config;
+import sse.storage.etc.Config;
 
 import com.xeiam.yank.DBProxy;
 
@@ -77,6 +78,8 @@ public abstract class BaseDao {
 	return id.intValue();
     }
 
+    /* Public Interface */
+
     public void init() {
 
     }
@@ -98,6 +101,62 @@ public abstract class BaseDao {
 	return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
     }
 
+    public List<?> find(String condition) {
+	String sql = "SELECT * FROM " + tableName + " WHERE " + condition;
+	return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
+    }
+
+    public int update(Object bean) {
+	Class<?> obj = bean.getClass();
+	Integer id = null;
+	try {
+	    Method get = obj.getMethod("getId");
+	    id = (Integer) get.invoke(bean);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    return 0;
+	}
+	if (id == null) {
+	    error("Update ID is null");
+	    return 0;
+	}
+	Field[] fields = obj.getDeclaredFields();
+	StringBuffer sql = new StringBuffer("UPDATE " + tableName + " SET ");
+	List<Object> params = new ArrayList<Object>();
+	for (Field f : fields) {
+	    if (f.getName().equals("id")) {
+		continue;
+	    }
+	    String methodName = "get"
+		    + String.valueOf(f.getName().charAt(0)).toUpperCase()
+		    + f.getName().substring(1);
+	    try {
+		Method get = obj.getMethod(methodName);
+		Object value = get.invoke(bean);
+		if (value == null) {
+		    continue;
+		}
+		sql.append(f.getName() + "=?,");
+		if (f.getType().getSimpleName().equals("Timestamp")) {
+		    SimpleDateFormat sdf = new SimpleDateFormat(
+			    "yyyy-MM-dd HH:mm:ss");
+		    value = sdf.format(value);
+		}
+		params.add(value);
+	    } catch (Exception e) {
+		e.printStackTrace();
+		return 0;
+	    }
+	}
+	if (params.size() == 0) {
+	    error("No attribute is updated");
+	    return 0;
+	}
+	sql.deleteCharAt(sql.length() - 1);
+	sql.append(" WHERE id=" + id + ";");
+	return DBProxy.executeSQL(getDb(), sql.toString(), params.toArray());
+    }
+
     public int insert(Object bean) {
 	Class<?> obj = bean.getClass();
 	Field[] fields = obj.getDeclaredFields();
@@ -105,10 +164,6 @@ public abstract class BaseDao {
 	StringBuffer sql2 = new StringBuffer();
 	List<Object> params = new ArrayList<Object>();
 	for (Field f : fields) {
-	    if (f.getName().equals("id")) {
-		continue;
-	    }
-
 	    String methodName = "get"
 		    + String.valueOf(f.getName().charAt(0)).toUpperCase()
 		    + f.getName().substring(1);
@@ -120,17 +175,15 @@ public abstract class BaseDao {
 		}
 		sql1.append(bean2Table(f.getName()) + ",");
 		sql2.append("?,");
+		if (f.getType().getSimpleName().equals("Timestamp")) {
+		    SimpleDateFormat sdf = new SimpleDateFormat(
+			    "yyyy-MM-dd HH:mm:ss");
+		    value = sdf.format(value);
+		}
 		params.add(value);
-	    } catch (IllegalArgumentException e) {
+	    } catch (Exception e) {
 		e.printStackTrace();
-	    } catch (NoSuchMethodException e) {
-		e.printStackTrace();
-	    } catch (SecurityException e) {
-		e.printStackTrace();
-	    } catch (IllegalAccessException e) {
-		e.printStackTrace();
-	    } catch (InvocationTargetException e) {
-		e.printStackTrace();
+		return -1;
 	    }
 	}
 	String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", tableName,

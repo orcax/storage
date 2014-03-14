@@ -8,26 +8,28 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.db.bean;
+package sse.storage.bean;
 
 import java.sql.Timestamp;
 
 /**
- * Clas Post
+ * Class Resource
  * 
  * @version 2014.3.10
  * @author Chris X.
  */
-public class Post {
+public class Resource {
 
     private Integer id;
-    private String block_id;
-    private String vdisk_id;
+    private Integer block_id;
     private String name;
+    private String format;
+    private String type;
+    private String status;
     private Integer size;
-    private String description;
     private Timestamp created;
     private Timestamp modified;
+    private String description;
 
     public Integer getId() {
 	return id;
@@ -37,20 +39,12 @@ public class Post {
 	this.id = id;
     }
 
-    public String getBlock_id() {
+    public Integer getBlock_id() {
 	return block_id;
     }
 
-    public void setBlock_id(String block_id) {
+    public void setBlock_id(Integer block_id) {
 	this.block_id = block_id;
-    }
-
-    public String getVdisk_id() {
-	return vdisk_id;
-    }
-
-    public void setVdisk_id(String vdisk_id) {
-	this.vdisk_id = vdisk_id;
     }
 
     public String getName() {
@@ -61,20 +55,36 @@ public class Post {
 	this.name = name;
     }
 
+    public String getFormat() {
+	return format;
+    }
+
+    public void setFormat(String format) {
+	this.format = format;
+    }
+
+    public String getType() {
+	return type;
+    }
+
+    public void setType(String type) {
+	this.type = type;
+    }
+
+    public String getStatus() {
+	return status;
+    }
+
+    public void setStatus(String status) {
+	this.status = status;
+    }
+
     public Integer getSize() {
 	return size;
     }
 
     public void setSize(Integer size) {
 	this.size = size;
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
     }
 
     public Timestamp getCreated() {
@@ -93,12 +103,21 @@ public class Post {
 	this.modified = modified;
     }
 
+    public String getDescription() {
+	return description;
+    }
+
+    public void setDescription(String description) {
+	this.description = description;
+    }
+
     @Override
     public String toString() {
-	return "Post [id=" + id + ", block_id=" + block_id + ", vdisk_id="
-		+ vdisk_id + ", name=" + name + ", size=" + size
-		+ ", description=" + description + ", created=" + created
-		+ ", modified=" + modified + "]";
+	return "Resource [id=" + id + ", block_id=" + block_id + ", name="
+		+ name + ", format=" + format + ", type=" + type + ", status="
+		+ status + ", size=" + size + ", created=" + created
+		+ ", modified=" + modified + ", description=" + description
+		+ "]";
     }
 
 }

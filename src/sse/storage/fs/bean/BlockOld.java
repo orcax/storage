@@ -16,7 +16,7 @@ package sse.storage.fs.bean;
  * @version 2014.3.10
  * @author Chris X.
  */
-public class Block {
+public class BlockOld {
     private String vdiskId;
     private String blockId;
     private int leftSpace;
@@ -46,8 +46,8 @@ public class Block {
     }
 
     @Override
-    public Block clone() {
-	Block block = new Block();
+    public BlockOld clone() {
+	BlockOld block = new BlockOld();
 	block.vdiskId = this.vdiskId;
 	block.blockId = this.blockId;
 	block.leftSpace = this.leftSpace;

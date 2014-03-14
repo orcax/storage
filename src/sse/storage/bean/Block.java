@@ -8,27 +8,38 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.db.bean;
+package sse.storage.bean;
 
 import java.sql.Timestamp;
 
 /**
- * Class Picture
+ * Class Block
  * 
- * @version 2014.3.10
+ * @version 2014.3.12
  * @author Chris X.
  */
-public class Picture {
+public class Block {
 
     private Integer id;
-    private String block_id;
     private String vdisk_id;
-    private String name;
-    private String format;
-    private Integer size;
-    private String description;
+    private String type;
+    private String status;
+    private Integer left_space;
     private Timestamp created;
     private Timestamp modified;
+
+    @Override
+    public Block clone() {
+	Block block = new Block();
+	block.id = this.id;
+	block.vdisk_id = this.vdisk_id;
+	block.type = this.type;
+	block.status = this.status;
+	block.left_space = this.left_space;
+	block.created = this.created;
+	block.modified = this.modified;
+	return block;
+    }
 
     public Integer getId() {
 	return id;
@@ -36,14 +47,6 @@ public class Picture {
 
     public void setId(Integer id) {
 	this.id = id;
-    }
-
-    public String getBlock_id() {
-	return block_id;
-    }
-
-    public void setBlock_id(String block_id) {
-	this.block_id = block_id;
     }
 
     public String getVdisk_id() {
@@ -54,36 +57,28 @@ public class Picture {
 	this.vdisk_id = vdisk_id;
     }
 
-    public String getName() {
-	return name;
+    public String getType() {
+	return type;
     }
 
-    public void setName(String name) {
-	this.name = name;
+    public void setType(String type) {
+	this.type = type;
     }
 
-    public String getFormat() {
-	return format;
+    public String getStatus() {
+	return status;
     }
 
-    public void setFormat(String format) {
-	this.format = format;
+    public void setStatus(String status) {
+	this.status = status;
     }
 
-    public Integer getSize() {
-	return size;
+    public Integer getLeft_space() {
+	return left_space;
     }
 
-    public void setSize(Integer size) {
-	this.size = size;
-    }
-
-    public String getDescription() {
-	return description;
-    }
-
-    public void setDescription(String description) {
-	this.description = description;
+    public void setLeft_space(Integer left_space) {
+	this.left_space = left_space;
     }
 
     public Timestamp getCreated() {
@@ -104,9 +99,8 @@ public class Picture {
 
     @Override
     public String toString() {
-	return "Picture [id=" + id + ", block_id=" + block_id + ", vdisk_id="
-		+ vdisk_id + ", name=" + name + ", format=" + format
-		+ ", size=" + size + ", description=" + description
+	return "Block [id=" + id + ", vdisk_id=" + vdisk_id + ", type=" + type
+		+ ", status=" + status + ", left_space=" + left_space
 		+ ", created=" + created + ", modified=" + modified + "]";
     }
 

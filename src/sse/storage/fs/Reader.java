@@ -8,7 +8,7 @@
  * Information and shall use it only in accordance with the terms of 
  * the license agreement you participate in the project work. 
  */
-package sse.storage.fs.io;
+package sse.storage.fs;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,10 +23,10 @@ import java.nio.channels.FileChannel;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
-import sse.storage.constant.Config;
-import sse.storage.fs.Coordinator;
-import sse.storage.fs.bean.ResourceFile;
-import sse.storage.fs.bean.VDisk;
+import sse.storage.bean.Block;
+import sse.storage.bean.ResourceEntity;
+import sse.storage.bean.VDisk;
+import sse.storage.etc.Config;
 
 /**
  * Class Reader
@@ -124,24 +124,27 @@ public class Reader {
 	}
     }
 
-    public byte[] readFile(ResourceFile res) {
-	if (res == null || res.getBlock_id() == null
-		|| res.getVdisk_id() == null) {
+    public byte[] readFile(ResourceEntity res) {
+	if (res == null || res.getBlock_id() == null) {
 	    return null;
 	}
-	VDisk vdisk = Config.INSTANCE.getVdisk(res.getVdisk_id());
+	Block block = BlockCenter.INSTANCE.getBlock(res.getBlock_id());
+	if(block == null) {
+	    return null;
+	}
+	VDisk vdisk = Config.INSTANCE.getVdisk(block.getVdisk_id());
 	if (vdisk == null) {
 	    return null;
 	}
 	if (vdisk.isLocal()) {
-	    return readLocalFile(Coordinator.mkurl(res));
+	    return readLocalFile(BlockCenter.INSTANCE.mkurl(res));
 	} else {
-	    return readSmbFile(Coordinator.mkurl(res));
+	    return readSmbFile(BlockCenter.INSTANCE.mkurl(res));
 	}
     }
 
-    public ResourceFile readRawFile(String path, boolean local) {
-	ResourceFile res = new ResourceFile();
+    public ResourceEntity readRawFile(String path, boolean local) {
+	ResourceEntity res = new ResourceEntity();
 	if (local) {
 	    File file = new File(path);
 	    if (!file.exists()) {
