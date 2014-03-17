@@ -56,8 +56,6 @@ public class Config {
     private Map<String, VDisk> vdisks = null;
     private Map<String, Database> databases = null;
 
-    private String currentDbId = null;
-
     private static Config instance = null;
 
     private Config() {
@@ -166,7 +164,6 @@ public class Config {
                         + " in the cluster " + cluster.getId()
                         + " should be first defined");
             }
-            this.currentDbId = cluster.getDbId();
 
             List<String> vdiskIds = new ArrayList<String>();
             for (Iterator<?> it2 = e.elementIterator("vdisk-id"); it2.hasNext();) {
@@ -287,16 +284,6 @@ public class Config {
 
     public String getResDir(String type) {
         return RES_DIRS.get(ResourceType.toEnum(type));
-    }
-
-    public String getCurrDbId() {
-        return this.currentDbId;
-    }
-
-    public void setCurrDbId(String dbId) {
-        if (databases.containsKey(dbId)) {
-            this.currentDbId = dbId;
-        }
     }
 
 }

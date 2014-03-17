@@ -20,8 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import sse.storage.etc.Config;
-
 import com.xeiam.yank.DBProxy;
 
 /**
@@ -35,12 +33,11 @@ public abstract class BaseDao {
     protected String prefix = "fs_";
     protected String tableName;
     protected Class<?> beanClass;
+    protected String dbId;
 
-    protected String getDb() {
-        return Config.getInstance().getCurrDbId();
-    }
+    public static boolean isPrtSQL = false;
 
-    protected String table2Bean(String tableName) {
+    private String table2Bean(String tableName) {
         if (tableName == null || tableName.equals("")) {
             return "";
         }
@@ -53,7 +50,7 @@ public abstract class BaseDao {
         return beanName;
     }
 
-    protected String bean2Table(String beanName) {
+    private String bean2Table(String beanName) {
         if (beanName == null || beanName.equals("")) {
             return "";
         }
@@ -73,40 +70,42 @@ public abstract class BaseDao {
      */
     protected int getLastInsertId() {
         String sql = "SELECT LAST_INSERT_ID() FROM " + tableName;
-        BigInteger id = DBProxy.querySingleScalarSQL(getDb(), sql,
+        BigInteger id = DBProxy.querySingleScalarSQL(dbId, sql,
                 BigInteger.class, null);
         return id.intValue();
     }
 
     private void prtSQL(String sql) {
-        info(String.format("DB=%s, SQL=%s", getDb(), sql));
+        if (isPrtSQL) {
+            info(String.format("DB=%s, SQL=%s", dbId, sql));
+        }
     }
 
     /* Public Interface */
 
     public void createTable() {
         String sqlKey = "CREATE_TABLE_" + tableName.toUpperCase();
-        DBProxy.executeSQLKey(getDb(), sqlKey, null);
-        info("Table " + tableName + " is created on DB " + getDb());
+        DBProxy.executeSQLKey(dbId, sqlKey, null);
+        info("Table " + tableName + " is created on DB " + dbId);
     }
 
     public Object read(int id) {
         String sql = String.format("SELECT * FROM %s WHERE id='%d'", tableName,
                 id);
         prtSQL(sql);
-        return DBProxy.querySingleObjectSQL(getDb(), sql, beanClass, null);
+        return DBProxy.querySingleObjectSQL(dbId, sql, beanClass, null);
     }
 
     public List<?> findAll() {
         String sql = "SELECT * FROM " + tableName;
         prtSQL(sql);
-        return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
+        return DBProxy.queryObjectListSQL(dbId, sql, beanClass, null);
     }
 
     public List<?> find(String condition) {
         String sql = "SELECT * FROM " + tableName + " WHERE " + condition;
         prtSQL(sql);
-        return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
+        return DBProxy.queryObjectListSQL(dbId, sql, beanClass, null);
     }
 
     public synchronized int update(Object bean) {
@@ -158,7 +157,7 @@ public abstract class BaseDao {
         sql.deleteCharAt(sql.length() - 1);
         sql.append(" WHERE id=" + id + ";");
         prtSQL(sql.toString());
-        return DBProxy.executeSQL(getDb(), sql.toString(), params.toArray());
+        return DBProxy.executeSQL(dbId, sql.toString(), params.toArray());
     }
 
     public synchronized int insert(Object bean) {
@@ -194,8 +193,14 @@ public abstract class BaseDao {
                 sql1.substring(0, sql1.length() - 1),
                 sql2.substring(0, sql2.length() - 1));
         prtSQL(sql);
-        DBProxy.executeSQL(getDb(), sql, params.toArray());
+        DBProxy.executeSQL(dbId, sql, params.toArray());
         return getLastInsertId();
+    }
+
+    public synchronized int delete(Integer id) {
+        String sql = "DELETE FROM " + tableName + " WHERE id=" + id;
+        prtSQL(sql);
+        return DBProxy.executeSQL(dbId, sql, null);
     }
 
 }

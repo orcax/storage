@@ -19,11 +19,13 @@ import java.sql.Timestamp;
 
 import sse.storage.bean.Block;
 import sse.storage.bean.Cluster;
+import sse.storage.bean.Database;
 import sse.storage.bean.Resource;
 import sse.storage.bean.ResourceEntity;
 import sse.storage.dao.ResourceDao;
 import sse.storage.etc.Config;
 import sse.storage.etc.ResourceType;
+import sse.storage.except.ResourceException;
 import sse.storage.fs.Reader;
 import sse.storage.fs.Writer;
 
@@ -36,19 +38,32 @@ import sse.storage.fs.Writer;
  */
 public class ResourceManager {
 
-    private String clusterId;
+    private String clusterId = null;
+    private Database db = null;
+    private ResourceDao resourceDao = null;
 
-    public ResourceManager() {
+    public ResourceManager() throws Exception {
         Cluster master = Config.getInstance().getMasterCluster();
         if (master == null) {
-            error("No master cluster is defined");
-            return;
+            throw new ResourceException("No master cluster is defined");
         }
         this.clusterId = master.getId();
+        this.db = Config.getInstance().getDatabaseByCluster(clusterId);
+        if (this.db == null) {
+            throw new ResourceException("No DB is defined in cluster "
+                    + clusterId);
+        }
+        this.resourceDao = new ResourceDao(db.getId());
     }
 
-    public ResourceManager(String clusterId) {
+    public ResourceManager(String clusterId) throws Exception {
         this.clusterId = clusterId;
+        this.db = Config.getInstance().getDatabaseByCluster(clusterId);
+        if (this.db == null) {
+            throw new ResourceException("No DB is defined in cluster "
+                    + clusterId);
+        }
+        this.resourceDao = new ResourceDao(db.getId());
     }
 
     /**
@@ -58,7 +73,7 @@ public class ResourceManager {
      * @return ResourceEntity
      */
     private ResourceEntity read(int id) {
-        Resource res = (Resource) ResourceDao.getInstance().read(id);
+        Resource res = (Resource) resourceDao.read(id);
         if (res.getStatus() == RES_STATUS_DELETED) {
             error("Resource has been deleted");
             return null;
@@ -89,7 +104,7 @@ public class ResourceManager {
     private int save(ResourceEntity re) {
         int id = -1;
         if (re.getId() == null) {
-            id = ResourceDao.getInstance().insert(re.toResource());
+            id = resourceDao.insert(re.toResource());
             if (id < 0) {
                 error("Save resource failed");
                 return -1;
@@ -97,7 +112,7 @@ public class ResourceManager {
             re.setId(id);
         } else {
             id = re.getId();
-            int row = ResourceDao.getInstance().update(re.toResource());
+            int row = resourceDao.update(re.toResource());
             if (row <= 0) {
                 error("Update resource failed");
                 return -1;

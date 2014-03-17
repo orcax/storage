@@ -1,5 +1,6 @@
 package sse.storage.core;
 
+import static sse.storage.etc.Toolkit.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,6 +31,11 @@ public class ClusterManager {
 
         public BlockManager getBlockManager(ResourceType rt) {
             return centers.get(rt);
+        }
+
+        @Override
+        public String toString() {
+            return centers.toString();
         }
     }
 

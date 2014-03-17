@@ -10,6 +10,7 @@
  */
 package sse.storage.fs;
 
+import static sse.storage.etc.Toolkit.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -49,10 +50,13 @@ public class Writer {
                 clusterId, re.getType());
         Block block = bm.getBlock(re.getBlock_id());
         if (block == null) {
+            error("block is null ++");
+            error(bm);
             return false;
         }
         VDisk vdisk = Config.getInstance().getVdisk(block.getVdisk_id());
         if (vdisk == null) {
+            error("vdisk is null;");
             return false;
         }
         if (vdisk.isLocal()) {

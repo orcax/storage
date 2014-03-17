@@ -19,19 +19,10 @@ import sse.storage.bean.Block;
  */
 public class BlockDao extends BaseDao {
 
-    private static BlockDao instance = null;
-
-    private BlockDao() {
-        super();
+    public BlockDao(String dbId) {
         this.tableName = this.prefix + "blocks";
         this.beanClass = Block.class;
-    }
-
-    public static synchronized BlockDao getInstance() {
-        if (instance == null) {
-            instance = new BlockDao();
-        }
-        return instance;
+        this.dbId = dbId;
     }
 
 }

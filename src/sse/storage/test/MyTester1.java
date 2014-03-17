@@ -15,34 +15,33 @@ public class MyTester1 {
     public static void main(String[] args) throws Exception {
         Config.getInstance();
         createTables();
-        ResourceManager rm = new ResourceManager(); // Try default master
-                                                    // cluster
-
+        // ResourceManager rm = new ResourceManager();
         String picPath = "/var/tmp/test/aaaaaa.jpg";
         // ResourceEntity p1 = rm.savePicture(picPath);
         // ResourceEntity p1 = rm.readPicture(1);
         // info(p1.getContent().length);
 
         String text = "啦啦啦啦啦aaaaaa\r\n男男女女男男女女男男女女";
-         ResourceEntity p2 = rm.savePost("文章1", text);
+        // ResourceEntity p2 = rm.savePost("文章1", text);
         // ResourceEntity p2 = rm.readPost(4);
         // info(p2.getContentString());
 
         String pdfPath = "/var/tmp/test/eee.pdf";
-         ResourceEntity p3 = rm.saveOther(pdfPath);
+        // ResourceEntity p3 = rm.saveOther(pdfPath);
         // ResourceEntity p3 = rm.readOther(6);
         // info(p3.getContent().length);
-        
-//        SyncManager.getInstance().sync("sys1", "sys2");
+
+        new ResourceDao("db2").delete(1);
+        new ResourceDao("db2").delete(3);
+        new ResourceDao("db2").delete(4);
+        SyncManager.getInstance().sync("sys1", "sys2");
     }
 
     public static void createTables() throws DaoException {
-        Config.getInstance().setCurrDbId("db1");
-        BlockDao.getInstance().createTable();
-        ResourceDao.getInstance().createTable();
-        Config.getInstance().setCurrDbId("db2");
-        BlockDao.getInstance().createTable();
-        ResourceDao.getInstance().createTable();
+        new BlockDao("db1").createTable();
+        new ResourceDao("db1").createTable();
+        new BlockDao("db2").createTable();
+        new ResourceDao("db2").createTable();
     }
 
 }

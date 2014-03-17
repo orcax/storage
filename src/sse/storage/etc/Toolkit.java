@@ -21,28 +21,28 @@ import java.sql.Timestamp;
 public final class Toolkit {
 
     public static final boolean isEmpty(String str) {
-	return str == null || str.isEmpty();
+        return str == null || str.isEmpty();
     }
 
     public static final boolean isEmpty(String... strs) {
-	for (String str : strs) {
-	    if (isEmpty(str)) {
-		return true;
-	    }
-	}
-	return false;
+        for (String str : strs) {
+            if (isEmpty(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static final void info(Object obj) {
-	System.out.println("[INFO] " + obj);
+        System.out.println("[INFO] " + obj);
     }
 
     public static final void error(Object obj) {
-	System.out.println("[ERROR] " + obj);
+        System.out.println("[ERROR] " + obj);
     }
 
     public static final Timestamp now() {
-	return new Timestamp(System.currentTimeMillis());
+        return new Timestamp(System.currentTimeMillis());
     }
 
     private Toolkit() {

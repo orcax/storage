@@ -20,19 +20,9 @@ import sse.storage.bean.Resource;
  */
 public class ResourceDao extends BaseDao {
 
-    private static ResourceDao instance = null;
-
-    private ResourceDao() {
-        super();
+    public ResourceDao(String dbId) {
         this.tableName = this.prefix + "resources";
         this.beanClass = Resource.class;
-    }
-
-    public static synchronized ResourceDao getInstance() {
-        if (instance == null) {
-            instance = new ResourceDao();
-        }
-        return instance;
-    }
-
+        this.dbId = dbId;
+    }  
 }

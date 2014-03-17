@@ -22,7 +22,6 @@ import java.util.Map;
 
 import jcifs.smb.SmbException;
 import sse.storage.bean.Block;
-import sse.storage.bean.Cluster;
 import sse.storage.bean.Database;
 import sse.storage.bean.Resource;
 import sse.storage.bean.VDisk;
@@ -36,21 +35,56 @@ import sse.storage.except.DaoException;
  * Class BlockCenter is binded with unique <Cluster, ResourceType> pairs so that
  * it can manage blocks in the specific place.
  * 
- * @version 2014.3.10
+ * @version 2014.3.17
  * @author Chris X.
  */
 public class BlockManager {
 
     private String clusterId = null;
     private ResourceType rt = null;
+    private Database db = null;
+    private BlockDao blockDao = null;
     private Map<Integer, Block> blocks = null;
     private Integer currBlockId = null;
 
     public BlockManager(String clusterId, ResourceType rt) throws Exception {
         this.clusterId = clusterId;
         this.rt = rt;
-        this.blocks = new HashMap<Integer, Block>();
-        init();
+        this.db = Config.getInstance().getDatabaseByCluster(clusterId);
+        if (this.db == null) {
+            throw new BlockException("Could not get current database");
+        }
+        this.blockDao = new BlockDao(db.getId());
+        loadBlocks();
+    }
+
+    /**
+     * Load blocks into memory from DB and set current block.
+     * 
+     * @throws Exception
+     */
+    private void loadBlocks() throws Exception {
+        if (blocks == null) {
+            this.blocks = new HashMap<Integer, Block>();
+        } else {
+            blocks.clear();
+        }
+
+        List<?> tmp = blockDao.find("type='" + rt.toString() + "'");
+        Iterator<?> it = tmp.iterator();
+        while (it.hasNext()) {
+            Block b = (Block) it.next();
+            blocks.put(b.getId(), b);
+            if (BLOCK_STATUS_USE.equals(b.getStatus())) {
+                currBlockId = b.getId();
+            }
+        }
+
+        info("loading:" + blocks.toString());
+
+        if (currBlockId != null) {
+            checkCurrBlock();
+        }
     }
 
     /**
@@ -70,12 +104,6 @@ public class BlockManager {
             throw new BlockException("Could not get vdisk in cluster "
                     + clusterId);
         }
-        Database db = Config.getInstance().getDatabaseByCluster(clusterId);
-        if (db == null) {
-            throw new BlockException("Could not get database in cluster "
-                    + clusterId);
-        }
-        Config.getInstance().setCurrDbId(db.getId());
         Block currBlock = blocks.get(currBlockId);
 
         /* Update old block in DB */
@@ -84,7 +112,7 @@ public class BlockManager {
             currBlock.setLeft_space(0);
             currBlock.setModified(now());
             currBlock.setStatus(BLOCK_STATUS_FULL);
-            BlockDao.getInstance().update(currBlock);
+            blockDao.update(currBlock);
             blocks.put(currBlock.getId(), currBlock);
         }
 
@@ -97,7 +125,7 @@ public class BlockManager {
         newBlock.setStatus(BLOCK_STATUS_USE);
         newBlock.setCreated(now());
         newBlock.setModified(now());
-        int id = BlockDao.getInstance().insert(newBlock);
+        int id = blockDao.insert(newBlock);
         if (id == -1) {
             throw new BlockException("Cannot insert newBlock into database");
         }
@@ -136,22 +164,17 @@ public class BlockManager {
         if (vdisk == null) {
             throw new BlockException("Could not get current vdisk");
         }
-        Database db = Config.getInstance().getDatabaseByCluster(clusterId);
-        if (db == null) {
-            throw new BlockException("Could not get current database");
-        }
-        Config.getInstance().setCurrDbId(db.getId());
         Block currBlock = blocks.get(currBlockId);
-        String subDir = Config.getInstance().getResDir(rt) + "/b" + currBlockId;
 
         /* Check if the block exists on FS */
 
+        String subDir = Config.getInstance().getResDir(rt) + "/b" + currBlockId;
         if (!vdisk.isdir(subDir)) {
             vdisk.mkdirs(subDir);
             currBlock.setLeft_space(MAX_BLOCK_SIZE);
             currBlock.setCreated(now());
             currBlock.setModified(now());
-            BlockDao.getInstance().update(currBlock);
+            blockDao.update(currBlock);
             blocks.put(currBlock.getId(), currBlock);
             return;
         }
@@ -169,36 +192,8 @@ public class BlockManager {
         if (MAX_BLOCK_SIZE - files.length != currBlock.getLeft_space()) {
             currBlock.setLeft_space(MAX_BLOCK_SIZE - files.length);
             currBlock.setModified(now());
-            BlockDao.getInstance().update(currBlock);
+            blockDao.update(currBlock);
             blocks.put(currBlock.getId(), currBlock);
-        }
-    }
-
-    private void init() throws Exception {
-        blocks.clear();
-        Database db = Config.getInstance().getDatabaseByCluster(clusterId);
-        if (db == null) {
-            throw new BlockException("Could not get current database");
-        }
-        Config.getInstance().setCurrDbId(db.getId());
-
-        /* Load blocks from DB */
-
-        List<?> tmp = BlockDao.getInstance().find(
-                "type='" + rt.toString() + "'");
-        Iterator<?> it = tmp.iterator();
-        while (it.hasNext()) {
-            Block b = (Block) it.next();
-            blocks.put(b.getId(), b);
-            if (BLOCK_STATUS_USE.equals(b.getStatus())) {
-                currBlockId = b.getId();
-            }
-        }
-
-        /* Check current blocks of different types */
-
-        if (currBlockId != null) {
-            checkCurrBlock();
         }
     }
 
@@ -251,12 +246,6 @@ public class BlockManager {
      * @throws Exception
      */
     public Block allocateBlock(ResourceType rt) throws Exception {
-        Database db = Config.getInstance().getDatabaseByCluster(clusterId);
-        if (db == null) {
-            throw new BlockException("Could not get current database");
-        }
-        Config.getInstance().setCurrDbId(db.getId());
-
         Block block = blocks.get(currBlockId);
         if (block == null || block.getLeft_space() <= 0) {
             return switchNewBlock();
@@ -264,7 +253,7 @@ public class BlockManager {
 
         block.setLeft_space(block.getLeft_space() - 1);
         block.setModified(now());
-        BlockDao.getInstance().update(block);
+        blockDao.update(block);
         blocks.put(block.getId(), block);
         currBlockId = block.getId();
         return block.clone();
@@ -290,6 +279,11 @@ public class BlockManager {
         while (it.hasNext()) {
             info(blocks.get(it.next()));
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.blocks.toString();
     }
 
 }
