@@ -25,7 +25,6 @@ public class BlockDao extends BaseDao {
         super();
         this.tableName = this.prefix + "blocks";
         this.beanClass = Block.class;
-        this.createTable();
     }
 
     public static synchronized BlockDao getInstance() {

@@ -26,7 +26,6 @@ public class ResourceDao extends BaseDao {
         super();
         this.tableName = this.prefix + "resources";
         this.beanClass = Resource.class;
-        this.createTable();
     }
 
     public static synchronized ResourceDao getInstance() {

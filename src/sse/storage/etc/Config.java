@@ -56,6 +56,8 @@ public class Config {
     private Map<String, VDisk> vdisks = null;
     private Map<String, Database> databases = null;
 
+    private String currentDbId = null;
+
     private static Config instance = null;
 
     private Config() {
@@ -104,6 +106,8 @@ public class Config {
             databases.put(db.getId(), db);
 
             DBConnectionManager.INSTANCE.init(db.getDbProps(), sqlProps);
+
+            info("Load database: " + db);
         }
         if (databases.isEmpty()) {
             throw new ConfigException("No database is defined in "
@@ -130,8 +134,10 @@ public class Config {
 
             Iterator<?> it2 = RES_DIRS.keySet().iterator();
             while (it2.hasNext()) {
-                vdisk.mkdirs((String) it2.next());
+                vdisk.mkdirs(RES_DIRS.get(it2.next()));
             }
+
+            info("Load vdisk: " + vdisk);
         }
         if (vdisks.isEmpty()) {
             throw new ConfigException("No vdisk is defined in "
@@ -140,7 +146,7 @@ public class Config {
     }
 
     private void initClusters(Element root) throws ConfigException {
-        boolean setMaster = false, setBackup = false;
+        int masterN = 0, backupN = 0;
         clusters = new HashMap<String, Cluster>();
         for (Iterator<?> it = root.elementIterator("cluster"); it.hasNext();) {
             Element e = (Element) it.next();
@@ -148,20 +154,24 @@ public class Config {
             cluster.setId(e.elementTextTrim("id"));
             cluster.setType(e.elementTextTrim("type"));
             if (cluster.isMaster()) {
-                setMaster = true;
+                masterN++;
             }
             if (cluster.isBackup()) {
-                setBackup = true;
+                backupN++;
             }
+
             cluster.setDbId(e.elementTextTrim("database-id"));
             if (!databases.containsKey(cluster.getDbId())) {
                 throw new ConfigException("Database " + cluster.getDbId()
                         + " in the cluster " + cluster.getId()
                         + " should be first defined");
             }
+            this.currentDbId = cluster.getDbId();
+
             List<String> vdiskIds = new ArrayList<String>();
             for (Iterator<?> it2 = e.elementIterator("vdisk-id"); it2.hasNext();) {
-                String vdiskId = (String) it2.next();
+                Element e2 = (Element) it2.next();
+                String vdiskId = e2.getTextTrim();
                 if (!vdisks.containsKey(vdiskId)) {
                     throw new ConfigException("VDisk " + vdiskId
                             + " in the cluster " + cluster.getId()
@@ -174,14 +184,21 @@ public class Config {
                         + cluster.getId());
             }
             cluster.setVdiskIds(vdiskIds.toArray(new String[0]));
+            clusters.put(cluster.getId(), cluster);
+
+            info("Load cluster: " + cluster);
         }
-        if (!setMaster) {
-            throw new ConfigException("Master cluster is not defined");
+        if (masterN != 1) {
+            throw new ConfigException(
+                    "There should be one master cluster defined.");
         }
-        if (!setBackup) {
-            throw new ConfigException("Backup cluster is not defined");
+        if (backupN <= 0) {
+            throw new ConfigException(
+                    "There should be at least one Backup cluster defined");
         }
     }
+
+    /* Public Interface */
 
     public static synchronized Config getInstance() {
         if (instance == null) {
@@ -190,11 +207,13 @@ public class Config {
         return instance;
     }
 
-    /**
-     * Get FIRST usable vdisk in the master cluster.
-     * 
-     * @return
-     */
+    public Map<String, Cluster> getClusters() {
+        return this.clusters;
+    }
+
+    public Cluster getCluster(String clusterId) {
+        return clusters.get(clusterId);
+    }
 
     public Cluster getMasterCluster() {
         Cluster master = null;
@@ -203,7 +222,7 @@ public class Config {
             Cluster cluster = clusters.get(it.next());
             if (cluster.isMaster()) {
                 master = cluster;
-                continue;
+                break;
             }
         }
         return master;
@@ -216,45 +235,50 @@ public class Config {
             Cluster cluster = clusters.get(it.next());
             if (cluster.isBackup()) {
                 backup = cluster;
-                continue;
+                break;
             }
         }
         return backup;
     }
 
-    public Map<String, Cluster> getClusters() {
-        return this.clusters;
-    }
-
-    public VDisk getCurrVdisk(String clusterId) {
-        Cluster cluster = clusters.get(clusterId);
-        if (cluster == null) {
-            error("Cluster " + clusterId + " is not defined");
-            return null;
-        }
-        return vdisks.get(cluster.getVdiskIds());
-    }
-
-    public Database getCurrDb(String clusterId) {
-        Cluster cluster = clusters.get(clusterId);
-        if (cluster == null) {
-            error("Cluster " + clusterId + " is not defined");
-            return null;
-        }
-        return databases.get(cluster.getDbId());
-
+    public Map<String, VDisk> getVdisks() {
+        return this.vdisks;
     }
 
     public VDisk getVdisk(String vdiskId) {
         return vdisks.get(vdiskId);
     }
 
+    /**
+     * Return FIRST vdisk in the cluster.
+     * 
+     * @param clusterId
+     * @return
+     */
+    public VDisk getVdiskByCluster(String clusterId) {
+        Cluster cluster = clusters.get(clusterId);
+        if (cluster == null) {
+            error("Cluster " + clusterId + " is not defined");
+            return null;
+        }
+        return vdisks.get(cluster.getVdiskIds()[0]);
+    }
+
+    public Map<String, Database> getDatabases() {
+        return this.databases;
+    }
+
     public Database getDatabase(String dbId) {
         return databases.get(dbId);
     }
 
-    public Cluster getCluster(String clusterId) {
-        return clusters.get(clusterId);
+    public Database getDatabaseByCluster(String clusterId) {
+        Cluster cluster = clusters.get(clusterId);
+        if (cluster == null) {
+            error("Cluster " + clusterId + " is not defined");
+            return null;
+        }
+        return databases.get(cluster.getDbId());
     }
 
     public String getResDir(ResourceType rt) {
@@ -263,6 +287,16 @@ public class Config {
 
     public String getResDir(String type) {
         return RES_DIRS.get(ResourceType.toEnum(type));
+    }
+
+    public String getCurrDbId() {
+        return this.currentDbId;
+    }
+
+    public void setCurrDbId(String dbId) {
+        if (databases.containsKey(dbId)) {
+            this.currentDbId = dbId;
+        }
     }
 
 }

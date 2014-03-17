@@ -10,20 +10,17 @@
  */
 package sse.storage.dao;
 
-import static sse.storage.etc.Toolkit.*;
+import static sse.storage.etc.Toolkit.error;
+import static sse.storage.etc.Toolkit.info;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import sse.storage.bean.Cluster;
-import sse.storage.bean.Database;
 import sse.storage.etc.Config;
-import sse.storage.except.BlockException;
 
 import com.xeiam.yank.DBProxy;
 
@@ -38,14 +35,9 @@ public abstract class BaseDao {
     protected String prefix = "fs_";
     protected String tableName;
     protected Class<?> beanClass;
-    protected String dbId;
 
-    /**
-     * db initially refers to master database.
-     */
-    protected BaseDao() {
-        Cluster cluster = Config.getInstance().getMasterCluster();
-        dbId = Config.getInstance().getDatabase(cluster.getDbId()).getId();
+    protected String getDb() {
+        return Config.getInstance().getCurrDbId();
     }
 
     protected String table2Bean(String tableName) {
@@ -81,52 +73,40 @@ public abstract class BaseDao {
      */
     protected int getLastInsertId() {
         String sql = "SELECT LAST_INSERT_ID() FROM " + tableName;
-        BigInteger id = DBProxy.querySingleScalarSQL(dbId, sql,
+        BigInteger id = DBProxy.querySingleScalarSQL(getDb(), sql,
                 BigInteger.class, null);
         return id.intValue();
     }
 
+    private void prtSQL(String sql) {
+        info(String.format("DB=%s, SQL=%s", getDb(), sql));
+    }
+
     /* Public Interface */
-
-    public void changeDb(String dbId) {
-        if (Config.getInstance().getDatabase(dbId) == null) {
-            error("Database " + dbId + " is not defined");
-            return;
-        }
-        this.dbId = dbId;
-    }
-
-    public void changeCluster(String clusterId) {
-        Database db = Config.getInstance().getCurrDb(clusterId);
-        if (db == null) {
-            return;
-        }
-        this.dbId = db.getId();
-    }
 
     public void createTable() {
         String sqlKey = "CREATE_TABLE_" + tableName.toUpperCase();
-        DBProxy.executeSQLKey(dbId, sqlKey, null);
-        info("Table " + tableName + " is created");
+        DBProxy.executeSQLKey(getDb(), sqlKey, null);
+        info("Table " + tableName + " is created on DB " + getDb());
     }
 
     public Object read(int id) {
         String sql = String.format("SELECT * FROM %s WHERE id='%d'", tableName,
                 id);
-        info("Executing: " + sql);
-        return DBProxy.querySingleObjectSQL(dbId, sql, beanClass, null);
+        prtSQL(sql);
+        return DBProxy.querySingleObjectSQL(getDb(), sql, beanClass, null);
     }
 
     public List<?> findAll() {
         String sql = "SELECT * FROM " + tableName;
-        info("Executing: " + sql);
-        return DBProxy.queryObjectListSQL(dbId, sql, beanClass, null);
+        prtSQL(sql);
+        return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
     }
 
     public List<?> find(String condition) {
         String sql = "SELECT * FROM " + tableName + " WHERE " + condition;
-        info("Executing: " + sql);
-        return DBProxy.queryObjectListSQL(dbId, sql, beanClass, null);
+        prtSQL(sql);
+        return DBProxy.queryObjectListSQL(getDb(), sql, beanClass, null);
     }
 
     public synchronized int update(Object bean) {
@@ -177,8 +157,8 @@ public abstract class BaseDao {
         }
         sql.deleteCharAt(sql.length() - 1);
         sql.append(" WHERE id=" + id + ";");
-        info("Executing: " + sql);
-        return DBProxy.executeSQL(dbId, sql.toString(), params.toArray());
+        prtSQL(sql.toString());
+        return DBProxy.executeSQL(getDb(), sql.toString(), params.toArray());
     }
 
     public synchronized int insert(Object bean) {
@@ -213,8 +193,8 @@ public abstract class BaseDao {
         String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", tableName,
                 sql1.substring(0, sql1.length() - 1),
                 sql2.substring(0, sql2.length() - 1));
-        info("Executing: " + sql);
-        DBProxy.executeSQL(dbId, sql, params.toArray());
+        prtSQL(sql);
+        DBProxy.executeSQL(getDb(), sql, params.toArray());
         return getLastInsertId();
     }
 

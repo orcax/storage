@@ -153,7 +153,10 @@ public class VDisk {
         if (isLocal()) {
             new File(path).delete();
         } else {
-            new SmbFile(path).delete();
+            SmbFile f = new SmbFile(path);
+            if (f.exists()) {
+                f.delete();
+            }
         }
     }
 

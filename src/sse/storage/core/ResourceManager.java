@@ -28,7 +28,8 @@ import sse.storage.fs.Reader;
 import sse.storage.fs.Writer;
 
 /**
- * Class ResourceManager
+ * Class ResourceManager has to be binded with a cluster ID so that resoruces
+ * can be read/written under that cluster. DEFAULT binded with master cluster.
  * 
  * @version 2013.3.10
  * @author Chris X.
@@ -109,7 +110,7 @@ public class ResourceManager {
     }
 
     /**
-     * Save picture in current cluster.
+     * Save picture in specified cluster.
      * 
      * @param name
      * @param format
@@ -129,8 +130,8 @@ public class ResourceManager {
         re.setModified(new Timestamp(System.currentTimeMillis()));
         re.setContent(content);
 
-        BlockManager bm = ClusterManager.getInstance().getMasterBlockManager(
-                ResourceType.PICTURE);
+        BlockManager bm = ClusterManager.getInstance().getBlockManager(
+                clusterId, ResourceType.PICTURE);
         Block block = bm.allocateBlock(ResourceType.PICTURE);
         re.setBlock_id(block.getId());
         int id = save(re);
@@ -150,6 +151,14 @@ public class ResourceManager {
         return savePicture(re.getName(), re.getFormat(), re.getContent());
     }
 
+    /**
+     * Save post in specified cluster.
+     * 
+     * @param name
+     * @param content
+     * @return
+     * @throws Exception
+     */
     public ResourceEntity savePost(String name, String content)
             throws Exception {
         ResourceEntity re = new ResourceEntity();
@@ -162,8 +171,8 @@ public class ResourceManager {
         re.setModified(new Timestamp(System.currentTimeMillis()));
         re.setContent(content);
 
-        BlockManager bm = ClusterManager.getInstance().getMasterBlockManager(
-                ResourceType.POST);
+        BlockManager bm = ClusterManager.getInstance().getBlockManager(
+                clusterId, ResourceType.POST);
         Block block = bm.allocateBlock(ResourceType.POST);
         re.setBlock_id(block.getId());
         int id = save(re);
@@ -174,6 +183,15 @@ public class ResourceManager {
         return re;
     }
 
+    /**
+     * Save other resource in specified cluster.
+     * 
+     * @param name
+     * @param format
+     * @param content
+     * @return
+     * @throws Exception
+     */
     public ResourceEntity saveOther(String name, String format, byte[] content)
             throws Exception {
         ResourceEntity re = new ResourceEntity();
@@ -189,9 +207,9 @@ public class ResourceManager {
         re.setModified(new Timestamp(System.currentTimeMillis()));
         re.setContent(content);
 
-        BlockManager bm = ClusterManager.getInstance().getMasterBlockManager(
-                ResourceType.POST);
-        Block block = bm.allocateBlock(ResourceType.POST);
+        BlockManager bm = ClusterManager.getInstance().getBlockManager(
+                clusterId, ResourceType.OTHER);
+        Block block = bm.allocateBlock(ResourceType.OTHER);
         re.setBlock_id(block.getId());
         int id = save(re);
         if (id == -1) {

@@ -115,5 +115,5 @@ public class Writer {
     public void transferFile(SmbFile src, File dest) {
 
     }
-
+    
 }

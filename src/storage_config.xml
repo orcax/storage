@@ -50,7 +50,7 @@
 	</vdisk>	
 	<vdisk>
 		<id>disk3</id>
-		<ip>172.16.103.133</ip>
+		<ip>172.16.103.152</ip>
 		<user>orcax</user>
 		<password>1234</password>
 		<root-path>/Public/storage</root-path>
