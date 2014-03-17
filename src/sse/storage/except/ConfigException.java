@@ -17,15 +17,15 @@ package sse.storage.except;
  * @author Chris X. 
  */
 @SuppressWarnings("serial")
-public class ConfigInitException extends Exception {
+public class ConfigException extends Exception {
 
     private String errorMsg;
 
-    public ConfigInitException() {
+    public ConfigException() {
 
     }
 
-    public ConfigInitException(String errorMsg) {
+    public ConfigException(String errorMsg) {
 	this.errorMsg = errorMsg;
     }
 

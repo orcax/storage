@@ -22,11 +22,7 @@ import static sse.storage.etc.Toolkit.*;
  */
 public class Database {
 
-    public static final String TYPE_MASTER = "master";
-    public static final String TYPE_BACKUP = "backup";
-
     private String id;
-    private String type;
     private String name;
     private String driver;
     private String user;
@@ -35,92 +31,80 @@ public class Database {
     private String maxconn;
 
     public boolean isValid() {
-	return !isEmpty(id, type, name, driver, user, password, url, maxconn);
-    }
-    
-    public boolean isMaster() {
-	return TYPE_MASTER.equals(this.type);
+        return !isEmpty(id, name, driver, user, password, url, maxconn);
     }
 
     public Properties getDbProps() {
-	Properties props = new Properties();
-	props.setProperty("driverclassname", driver);
-	props.setProperty(name + ".url", url);
-	props.setProperty(name + ".user", user);
-	props.setProperty(name + ".password", password);
-	props.setProperty(name + ".maxconn", maxconn);
-	return props;
+        Properties props = new Properties();
+        props.setProperty("driverclassname", driver);
+        props.setProperty(id + ".url", url);
+        props.setProperty(id + ".user", user);
+        props.setProperty(id + ".password", password);
+        props.setProperty(id + ".maxconn", maxconn);
+        return props;
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public void setId(String id) {
-	this.id = id;
-    }
-
-    public String getType() {
-	return type;
-    }
-
-    public void setType(String type) {
-	this.type = type;
+        this.id = id;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public String getDriver() {
-	return driver;
+        return driver;
     }
 
     public void setDriver(String driver) {
-	this.driver = driver;
+        this.driver = driver;
     }
 
     public String getUser() {
-	return user;
+        return user;
     }
 
     public void setUser(String user) {
-	this.user = user;
+        this.user = user;
     }
 
     public String getPassword() {
-	return password;
+        return password;
     }
 
     public void setPassword(String password) {
-	this.password = password;
+        this.password = password;
     }
 
     public String getUrl() {
-	return url;
+        return url;
     }
 
     public void setUrl(String url) {
-	this.url = url;
+        this.url = url;
     }
 
     public String getMaxconn() {
-	return maxconn;
+        return maxconn;
     }
 
     public void setMaxconn(String maxconn) {
-	this.maxconn = maxconn;
+        this.maxconn = maxconn;
     }
 
     @Override
     public String toString() {
-	return "Database [id=" + id + ", type=" + type + ", name=" + name
-		+ ", driver=" + driver + ", user=" + user + ", password="
-		+ password + ", url=" + url + ", maxconn=" + maxconn + "]";
+        return "Database [id=" + id + ", name=" + name + ", driver=" + driver
+                + ", user=" + user + ", password=" + password + ", url=" + url
+                + ", maxconn=" + maxconn + "]";
     }
 
 }

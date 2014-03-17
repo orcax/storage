@@ -24,9 +24,25 @@ public class ResourceEntity extends Resource {
 
     private byte[] content;
 
+    public ResourceEntity() {
+    }
+
+    public ResourceEntity(Resource res) {
+        this.setId(res.getId());
+        this.setBlock_id(res.getBlock_id());
+        this.setName(res.getName());
+        this.setFormat(res.getFormat());
+        this.setType(res.getType());
+        this.setStatus(res.getStatus());
+        this.setSize(res.getSize());
+        this.setCreated(res.getCreated());
+        this.setModified(res.getModified());
+        this.setDescription(res.getDescription());
+    }
+
     public Resource toResource() {
-	Resource res = new Resource();
-	res.setId(this.getId());
+        Resource res = new Resource();
+        res.setId(this.getId());
         res.setBlock_id(this.getBlock_id());
         res.setName(this.getName());
         res.setFormat(this.getFormat());
@@ -39,42 +55,29 @@ public class ResourceEntity extends Resource {
         return res;
     }
 
-    public void fromResource(Resource res) {
-	this.setId(res.getId());
-	this.setBlock_id(res.getBlock_id());
-	this.setName(res.getName());
-	this.setFormat(res.getFormat());
-	this.setType(res.getType());
-	this.setStatus(res.getStatus());
-	this.setSize(res.getSize());
-	this.setCreated(res.getCreated());
-	this.setModified(res.getModified());
-	this.setDescription(res.getDescription());
-    }
-
     public byte[] getContent() {
-	return content;
+        return content;
     }
 
     public String getContentString() {
-	return new String(content);
+        return new String(content);
     }
-    
+
     public String getContentString(String encode) {
-	try {
-	    return new String(content, ENCODING);
-	} catch (UnsupportedEncodingException e) {
-	    e.printStackTrace();
-	}
-	return null;
+        try {
+            return new String(content, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setContent(byte[] content) {
-	this.content = content;
+        this.content = content;
     }
 
     public void setContent(String content) {
-	this.content = content.getBytes();
+        this.content = content.getBytes();
     }
 
 }

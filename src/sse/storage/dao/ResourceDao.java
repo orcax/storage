@@ -20,13 +20,20 @@ import sse.storage.bean.Resource;
  */
 public class ResourceDao extends BaseDao {
 
-    public static final ResourceDao INSTANCE = new ResourceDao();
+    private static ResourceDao instance = null;
 
     private ResourceDao() {
-	super();
-	this.tableName = this.prefix + "resources";
-	this.beanClass = Resource.class;
-	this.createTable();
+        super();
+        this.tableName = this.prefix + "resources";
+        this.beanClass = Resource.class;
+        this.createTable();
+    }
+
+    public static synchronized ResourceDao getInstance() {
+        if (instance == null) {
+            instance = new ResourceDao();
+        }
+        return instance;
     }
 
 }

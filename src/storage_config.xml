@@ -1,37 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <storage>
-	
-	<current-vdisk>s1</current-vdisk>
-	<current-database>db1</current-database>
 		
-	<vdisk>
-		<id>s1</id>
+	<cluster>
+		<id>sys1</id>
 		<type>master</type>
-		<ip>localhost</ip>
-		<user></user>
-		<password></password>
-		<root-path>/var/tmp/storage/</root-path>
-	</vdisk>
-	
-	<vdisk>
-		<id>s2</id>
-		<type>master</type>
-		<ip>172.16.103.133</ip>
-		<user>orcax</user>
-		<password>1234</password>
-		<root-path>/Public/storage</root-path>
-	</vdisk>
-	
-	
+		<database-id>db1</database-id>
+		<vdisk-id>disk1</vdisk-id>
+		<vdisk-id>disk2</vdisk-id>
+	</cluster>
+	<cluster>
+		<id>sys2</id>
+		<type>backup</type>
+		<database-id>db2</database-id>
+		<vdisk-id>disk3</vdisk-id>
+	</cluster>
+				
 	<database>
 		<id>db1</id>
-		<type>master</type>
-		<name>mysql</name>
+		<name>mysql1</name>
 		<driver>com.mysql.jdbc.Driver</driver>
 		<url>jdbc:mysql://localhost:3306/storage?useUnicode=true&amp;characterEncoding=UTF-8</url>
 		<user>root</user>
 		<password>1234</password>
 		<maxconn>10</maxconn>
+	</database>	
+	<database>
+		<id>db2</id>
+		<name>mysql2</name>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<url>jdbc:mysql://localhost:3306/storage-backup?useUnicode=true&amp;characterEncoding=UTF-8</url>
+		<user>root</user>
+		<password>1234</password>
+		<maxconn>10</maxconn>
 	</database>
+		
+	<vdisk>
+		<id>disk1</id>
+		<ip>localhost</ip>
+		<user></user>
+		<password></password>
+		<root-path>/var/tmp/storage</root-path>
+	</vdisk>
+	<vdisk>
+		<id>disk2</id>
+		<ip>localhost</ip>
+		<user></user>
+		<password></password>
+		<root-path>/var/tmp/storage2</root-path>
+	</vdisk>	
+	<vdisk>
+		<id>disk3</id>
+		<ip>172.16.103.133</ip>
+		<user>orcax</user>
+		<password>1234</password>
+		<root-path>/Public/storage</root-path>
+	</vdisk>
 	
 </storage>

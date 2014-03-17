@@ -20,6 +20,8 @@ import jcifs.smb.SmbFileOutputStream;
 import sse.storage.bean.Block;
 import sse.storage.bean.ResourceEntity;
 import sse.storage.bean.VDisk;
+import sse.storage.core.BlockManager;
+import sse.storage.core.ClusterManager;
 import sse.storage.etc.Config;
 
 /**
@@ -30,28 +32,33 @@ import sse.storage.etc.Config;
  */
 public class Writer {
 
-    public static final Writer INSTANCE = new Writer();
+    public static Writer instance = null;
 
     private Writer() {
-
+    }
+    
+    public static synchronized Writer getInstance() {
+        if (instance == null) {
+            instance = new Writer();
+        }
+        return instance;
     }
 
-    public boolean writeFile(ResourceEntity re) {
-        if (re == null || re.getBlock_id() == null) {
-            return false;
-        }
-        Block block = BlockCenter.INSTANCE.getBlock(re.getBlock_id());
+    public boolean writeFile(String clusterId, ResourceEntity re) {
+        BlockManager bm = ClusterManager.getInstance().getBlockManager(
+                clusterId, re.getType());
+        Block block = bm.getBlock(re.getBlock_id());
         if (block == null) {
             return false;
         }
-        VDisk vdisk = Config.INSTANCE.getVdisk(block.getVdisk_id());
+        VDisk vdisk = Config.getInstance().getVdisk(block.getVdisk_id());
         if (vdisk == null) {
             return false;
         }
         if (vdisk.isLocal()) {
             FileOutputStream fos = null;
             try {
-                fos = new FileOutputStream(BlockCenter.INSTANCE.mkurl(re));
+                fos = new FileOutputStream(bm.mkurl(re));
                 fos.write(re.getContent());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -71,7 +78,7 @@ public class Writer {
         } else {
             SmbFileOutputStream fos = null;
             try {
-                SmbFile file = new SmbFile(BlockCenter.INSTANCE.mkurl(re));
+                SmbFile file = new SmbFile(bm.mkurl(re));
                 fos = new SmbFileOutputStream(file);
                 fos.write(re.getContent());
             } catch (FileNotFoundException e) {
